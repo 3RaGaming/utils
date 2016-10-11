@@ -1,8 +1,8 @@
 --Admin gui
 --a 3Ra Gaming creation
 local function gui_click(event)
-    local p = game.players[event.player_index]
     local i = event.player_index
+    local p = game.players[i]
     local e = event.element.name
     if p.gui.top.spectate ~= nil then
         if e ~= nil then
@@ -20,7 +20,7 @@ end
 
 --Admin GUI check
 local function admin_joined(event)
-    local player = game.players[event.player_index] 
+    local player = game.players[event.player_index]
     if player.admin then
         if not player.gui.top.spectate then
             local adminframe = player.gui.top.add{name = "spectate", type = "button", direction = "horizontal", caption = "Spectate"}
