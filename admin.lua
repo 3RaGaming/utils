@@ -1,5 +1,8 @@
---Admin gui
---a 3Ra Gaming creation
+-- @module admin
+-- A 3Ra Gaming creation
+
+-- Handle spectate gui click
+-- @param event gui click event
 local function gui_click(event)
     local i = event.player_index
     local p = game.players[i]
@@ -18,7 +21,8 @@ local function gui_click(event)
     end
 end
 
---Admin GUI check
+-- Announce an admin's joining and give them the admin gui
+-- @param event player joined event
 local function admin_joined(event)
     local player = game.players[event.player_index]
     if player.admin then
@@ -30,7 +34,8 @@ local function admin_joined(event)
 
 end
 
---Function to spectate or bring back to character
+-- Toggle the player's spectator state
+-- @param index index of the player to change
 function force_spectators(index)
     local player = game.players[index]
     global.player_spectator_state = global.player_spectator_state or {}
@@ -67,5 +72,6 @@ function force_spectators(index)
     end
 end
 
+-- Event handlers
 Event.register(defines.events.on_player_joined_game, admin_joined)
 Event.register(defines.events.on_gui_click, gui_click)
