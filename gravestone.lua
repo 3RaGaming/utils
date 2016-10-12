@@ -1,5 +1,5 @@
---Gravestone [based on Hazzard's Gravestone Mod]
---A 3Ra Gaming revision
+-- Gravestone [based on Hazzard's Gravestone Mod]
+-- A 3Ra Gaming revision
 --[[ list of inventories to save - constants from api reference]]--
 local storeinventories = { 
 	defines.inventory.player_vehicle,
@@ -26,6 +26,10 @@ local storeinventoriesstring = {
 
 local save_craft_queue = true
 
+-- Spawn a chest near the player if possible
+-- @param player the player to spawn the chest near
+-- @param chestname the name of the chest
+-- @return LuaEntity chest that was created or nil
 local function spawn_chest(player, chestname)
 	if player ~= nil then
 		local playersurface = game.surfaces[player.surface.name]
@@ -48,6 +52,8 @@ local function spawn_chest(player, chestname)
 	return nil
 end
 
+-- Handle player death
+-- @param event event to handle
 local function on_player_died(event)
 	local player = game.players[event.player_index]
 	if player ~= nil then
@@ -58,7 +64,7 @@ local function on_player_died(event)
 			local chestitems = 0
 			local chestinventory = savechest.get_inventory(defines.inventory.chest)
 
-			--[[ save all predefined inventorie ]]--
+			--[[ save all predefined inventories ]]--
 			for i = 1, #storeinventories, 1 do
 				local inventoryid = storeinventories[i]
 				local playerinventory = player.get_inventory(inventoryid)
@@ -207,5 +213,5 @@ local function on_player_died(event)
 	end
 end
 
-
+-- Event handlers
 Event.register(defines.events.on_player_died, on_player_died)
