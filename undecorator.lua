@@ -12,6 +12,12 @@ local function removeDecorationsArea(surface, area )
     end
 end
 
+--this fires whenever new chunks are generated.
+Event.register(defines.events.on_chunk_generated, function(event)
+    removeDecorationsArea( event.surface, event.area )
+end)
+--the rest only triggers if they've never been removed before on whichever map is loaded.
+
 -- Clean parameters for removeDecorationsArea function
 -- @param surface target surface
 -- @param x bottom left x coordinate
@@ -29,14 +35,8 @@ local function clearDecorations()
         removeDecorations(surface, chunk.x * CHUNK_SIZE, chunk.y * CHUNK_SIZE, CHUNK_SIZE - 1, CHUNK_SIZE - 1)
     end
     
-    for _, player in pairs(game.players) do
-        player.print("Decorations removed")
-    end
+    game.print("Decorations removed")
 end
-
-Event.register(defines.events.on_chunk_generated, function(event)
-    removeDecorationsArea( event.surface, event.area )
-end)
 
 -- If the map hasn't been scanned already, clear it
 -- @param event on_tick event
