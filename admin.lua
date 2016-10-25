@@ -19,51 +19,61 @@ local function gui_click(event)
                     return
                 end
                 force_spectators(i)
-			else if e == "character" then
-				player.gui.top.character.destroy()
+			elseif e == "character" then
+				p.gui.top.character.destroy()
 				create_character_gui(i)
-			else if e == "character_close"
+			elseif e == "character_close" then
 				p.gui.top.character_panel.destroy()
-				player.gui.top.add{name = "character", type = "button", direction = "vertical", caption = "Character"}
-			else if e == "character_pickup" then
-				if settings.item_loot_pickup then
+				p.gui.top.add{name = "character", type = "button", direction = "vertical", caption = "Character"}
+			elseif e == "character_pickup" then
+				if global.player_character_stats[i].item_loot_pickup then
+					global.player_character_stats[i].item_loot_pickup = false
 					event.element.style.font_color = global.red
 					p.character_item_pickup_distance_bonus = 0
 					p.character_loot_pickup_distance_bonus = 0
 				else
+					global.player_character_stats[i].item_loot_pickup = true
 					event.element.style.font_color = global.green
 					p.character_item_pickup_distance_bonus = 125
 					p.character_loot_pickup_distance_bonus = 125
 				end
-			else if e == "character_reach" then
-				if settings.itemdrop_reach_resourcereach_distance then
+			elseif e == "character_reach" then
+				if global.player_character_stats[i].build_itemdrop_reach_resourcereach_distance then
+					global.player_character_stats[i].build_itemdrop_reach_resourcereach_distance = false
 					event.element.style.font_color = global.red
+					p.character_build_distance_bonus = 0
 					p.character_item_drop_distance_bonus = 0
 					p.character_reach_distance_bonus = 0
 					p.character_resource_reach_distance_bonus = 0
 				else
+					global.player_character_stats[i].build_itemdrop_reach_resourcereach_distance = true
 					event.element.style.font_color = global.green
+					p.character_build_distance_bonus = 125
 					p.character_item_drop_distance_bonus = 125
 					p.character_reach_distance_bonus = 125
 					p.character_resource_reach_distance_bonus = 125
 				end
-			else if e == "character_craft" then
-				if settings.crafting_speed then
+			elseif e == "character_craft" then
+				if global.player_character_stats[i].crafting_speed then
+					global.player_character_stats[i].crafting_speed = false
 					event.element.style.font_color = global.red
 					p.character_crafting_speed_modifier = 0
 				else
+					global.player_character_stats[i].crafting_speed = true
 					event.element.style.font_color = global.green
 					p.character_crafting_speed_modifier = 60
 				end
-			else if e == "character_mine" then
-				if settings.mining_speed then
+			elseif e == "character_mine" then
+				if global.player_character_stats[i].mining_speed then
+					global.player_character_stats[i].mining_speed = false
 					event.element.style.font_color = global.red
 					p.character_mining_speed_modifier = 0
 				else
+					global.player_character_stats[i].mining_speed = true
 					event.element.style.font_color = global.green
 					p.character_mining_speed_modifier = 150
 				end
-			else if e == "character_run1" then
+			elseif e == "character_run1" then
 				local run_table = event.element.parent
 				run_table.character_run1.state = true
 				run_table.character_run2.state = false
@@ -71,8 +81,8 @@ local function gui_click(event)
 				run_table.character_run5.state = false
 				run_table.character_run10.state = false
 				p.character_running_speed_modifier = 0
-				global.player_character_stats[index].running_speed = 0
-			else if e == "character_run2" then
+				global.player_character_stats[i].running_speed = 0
+			elseif e == "character_run2" then
 				local run_table = event.element.parent
 				run_table.character_run1.state = false
 				run_table.character_run2.state = true
@@ -80,8 +90,8 @@ local function gui_click(event)
 				run_table.character_run5.state = false
 				run_table.character_run10.state = false
 				p.character_running_speed_modifier = 1
-				global.player_character_stats[index].running_speed = 1
-			else if e == "character_run3" then
+				global.player_character_stats[i].running_speed = 1
+			elseif e == "character_run3" then
 				local run_table = event.element.parent
 				run_table.character_run1.state = false
 				run_table.character_run2.state = false
@@ -89,8 +99,8 @@ local function gui_click(event)
 				run_table.character_run5.state = false
 				run_table.character_run10.state = false
 				p.character_running_speed_modifier = 2
-				global.player_character_stats[index].running_speed = 2
-			else if e == "character_run5" then
+				global.player_character_stats[i].running_speed = 2
+			elseif e == "character_run5" then
 				local run_table = event.element.parent
 				run_table.character_run1.state = false
 				run_table.character_run2.state = false
@@ -98,8 +108,8 @@ local function gui_click(event)
 				run_table.character_run5.state = true
 				run_table.character_run10.state = false
 				p.character_running_speed_modifier = 4
-				global.player_character_stats[index].running_speed = 4
-			else if e == "character_run10" then
+				global.player_character_stats[i].running_speed = 4
+			elseif e == "character_run10" then
 				local run_table = event.element.parent
 				run_table.character_run1.state = false
 				run_table.character_run2.state = false
@@ -107,7 +117,7 @@ local function gui_click(event)
 				run_table.character_run5.state = false
 				run_table.character_run10.state = true
 				p.character_running_speed_modifier = 9
-				global.player_character_stats[index].running_speed = 9
+				global.player_character_stats[i].running_speed = 9
             end
         end
     end
@@ -115,7 +125,7 @@ end
 
 --Create the full character GUI for admins to update their character settings
 -- @param index index of the player to change
-local function create_character_gui(index)
+function create_character_gui(index)
 	local player = game.players[index]
 	local character_frame = player.gui.top.add{name = "character_panel", type = "frame", direction = "vertical", caption = "Character"}
 	character_frame.add{name = "character_pickup", type = "button", caption = "Pickup"}
@@ -139,7 +149,7 @@ end
 
 --Updates the full character GUI to show the current settings
 -- @param index index of the player to change
-local function update_character_settings(index)
+function update_character_settings(index)
 	local char_gui = game.players[index].gui.top.character_panel
 	local settings = global.player_character_stats[index]
 	
@@ -149,7 +159,7 @@ local function update_character_settings(index)
 		char_gui.character_pickup.style.font_color = global.red
 	end
 	
-	if settings.itemdrop_reach_resourcereach_distance then
+	if settings.build_itemdrop_reach_resourcereach_distance then
 		char_gui.character_reach.style.font_color = global.green
 	else
 		char_gui.character_reach.style.font_color = global.red
@@ -170,20 +180,20 @@ local function update_character_settings(index)
 	local run_table = char_gui.character_run
 	if settings.running_speed == 0 then
 		run_table.character_run1.state = true
-	else if settings.running_speed == 1 then
+	elseif settings.running_speed == 1 then
 		run_table.character_run2.state = true
-	else if settings.running_speed == 2 then
+	elseif settings.running_speed == 2 then
 		run_table.character_run3.state = true
-	else if settings.running_speed == 4 then
+	elseif settings.running_speed == 4 then
 		run_table.character_run5.state = true
-	else if settings.running_speed == 9 then
+	elseif settings.running_speed == 9 then
 		run_table.character_run10.state = true
 	end
 end
 
 --Updates the new character of an admin coming out of spectate mode
 -- @param index index of the player to change
-local function update_character(index)
+function update_character(index)
 	local player = game.players[index]
 	local settings = global.player_character_stats[index]
 	
@@ -192,7 +202,7 @@ local function update_character(index)
 		player.character_loot_pickup_distance_bonus = 125
 	end
 	
-	if settings.itemdrop_reach_resourcereach_distance then
+	if settings.build_itemdrop_reach_resourcereach_distance then
 		player.character_item_drop_distance_bonus = 125
 		player.character_reach_distance_bonus = 125
 		player.character_resource_reach_distance_bonus = 125
@@ -212,7 +222,8 @@ end
 -- Announce an admin's joining and give them the admin gui
 -- @param event player joined event
 local function admin_joined(event)
-    local player = game.players[event.player_index]
+	local index = event.player_index
+    local player = game.players[index]
 	global.player_character_stats = global.player_character_stats or {}
     if player.admin then
         if not player.gui.top.spectate then
@@ -224,8 +235,7 @@ local function admin_joined(event)
 		if global.player_character_stats[index] == nil then
 			global.player_character_stats[index] = {
 				item_loot_pickup = false,
-				itemdrop_reach_resourcereach_distance = false,
-				build_distance = false,
+				build_itemdrop_reach_resourcereach_distance = false,
 				crafting_speed = false,
 				mining_speed = false,
 				running_speed = 0
