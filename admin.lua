@@ -290,7 +290,7 @@ function force_spectators(index)
 		player.print("You are now a spectator")
         player.gui.top.spectate.caption = "Return"
 		if player.gui.top.character_panel ~= nil then
-			p.gui.top.character_panel.destroy()
+			player.gui.top.character_panel.destroy()
 			player.gui.top.add{name = "character", type = "button", direction = "vertical", caption = "Character"}
 		end
 		player.gui.top.character.caption = "Disabled"
