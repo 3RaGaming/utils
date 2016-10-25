@@ -10,6 +10,10 @@ local function gui_click(event)
     local i = event.player_index
     local p = game.players[i]
     local e = event.element.name
+	if e == "character" and event.element.caption == "Disabled" then
+		p.print("Character modification disabled in Spectator mode.")
+		return
+	end
     if p.gui.top.spectate ~= nil then
         if e ~= nil then
             if e == "spectate" then
