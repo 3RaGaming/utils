@@ -127,7 +127,7 @@ local function gui_click(event)
     end
 end
 
---Create the full character GUI for admins to update their character settings
+-- Create the full character GUI for admins to update their character settings
 -- @param index index of the player to change
 function create_character_gui(index)
 	local player = game.players[index]
@@ -136,6 +136,7 @@ function create_character_gui(index)
 	character_frame.add{name = "character_reach", type = "button", caption = "Reach"}
 	character_frame.add{name = "character_craft", type = "button", caption = "Crafting"}
 	character_frame.add{name = "character_mine", type = "button", caption = "Mining"}
+	character_frame.add{name = "run_label", type = "label", caption = "Run speed control:"}
 	local run_table = character_frame.add{name = "character_run", type = "table", colspan = 5, caption = "Run Speed"}
 	run_table.add{name = "run1_label", type = "label", caption = "1x"}
 	run_table.add{name = "run2_label", type = "label", caption = "2x"}
@@ -151,7 +152,7 @@ function create_character_gui(index)
 	update_character_settings(index)
 end
 
---Updates the full character GUI to show the current settings
+-- Updates the full character GUI to show the current settings
 -- @param index index of the player to change
 function update_character_settings(index)
 	local char_gui = game.players[index].gui.top.character_panel
@@ -195,7 +196,7 @@ function update_character_settings(index)
 	end
 end
 
---Updates the new character of an admin coming out of spectate mode
+-- Updates the new character of an admin coming out of spectate mode
 -- @param index index of the player to change
 function update_character(index)
 	local player = game.players[index]
@@ -243,7 +244,7 @@ local function admin_joined(event)
 				crafting_speed = false,
 				mining_speed = false,
 				running_speed = 0
-				}
+			}
 		end
 			
         game.print("All Hail Admin "..player.name)
