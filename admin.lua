@@ -1,8 +1,8 @@
 -- @module admin
 -- A 3Ra Gaming creation
 
-global.green = {r= 0/256, g=  256/256, b=  0/256}
-global.red = {r= 256/256, g=  0/256, b=  0/256}
+global.green = {r = 0, g = 1, b = 0}
+global.red = {r = 1, g = 0, b = 0}
 
 -- Handle various gui clicks, either spectate or character modification
 -- @param event gui click event
