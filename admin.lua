@@ -4,10 +4,12 @@
 global.green = { r = 0, g = 1, b = 0 }
 global.red = { r = 1, g = 0, b = 0 }
 
-follow_targets = {}
+global.follow_targets = {}
+global.original_position = {}
+global.original_surface = {}
 
 local function update_position(event)
-    for player, follow_target in pairs(follow_targets) do
+    for player, follow_target in pairs(global.follow_targets) do
         if follow_target ~= nil then
             player.teleport(follow_target.position, follow_target.surface)
         end
@@ -137,12 +139,18 @@ local function gui_click(event)
         elseif e == "follow" then
             toggle_follow_panel(p)
         elseif e == "unfollow" then
-            follow_targets[p] = nil
+            global.follow_targets[p] = nil
+--        elseif e == "return" then
+--            global.follow_targets[p] = nil
+--            p.print(global.original_position[p])
+--            p.teleport(global.original_position[p],global.original_surface[p])
         end
         --set who to follow
         for _, player in pairs(game.connected_players) do
-            if e == player.index then
-                follow_targets[p] = player
+            if e == player.name then
+                global.original_position[p] = player.position
+                global.original_surface[p] = player.surface
+                global.follow_targets[p] = player
             end
         end
     end
@@ -253,16 +261,17 @@ local function update_follow_panel(player)
 
         local follow_frame = player.gui.left.add { name = "follow_panel", type = "table", colspan = 10, caption = "Choose player to follow" }
         for _, player in pairs(game.connected_players) do
-            follow_frame.add { name = player.index, type = "button", caption = player.name }
+            follow_frame.add { name = player.name, type = "button", caption = player.name }
         end
         follow_frame.add { name = "unfollow", type = "button", caption = "Unfollow" }
+        follow_frame.add { name = "return", type = "button", caption = "Return"}
     end
 end
 
 function toggle_follow_panel(player)
     if player.gui.left.follow_panel then
         player.gui.left.follow_panel.destroy()
-        follow_targets[player] = nil
+        global.follow_targets[player] = nil
     else
         player.gui.left.add { name = "follow_panel", type = "frame" }
         update_follow_panel(player)
@@ -271,9 +280,9 @@ end
 
 local function connected_players_changed(event)
     local changed_player = game.players[event.player_index]
-    for player, follow_target in pairs(follow_targets) do
+    for player, follow_target in pairs(global.follow_targets) do
         if player == changed_player or follow_target == changed_player then
-            follow_targets[player] = nil
+            global.follow_targets[player] = nil
         end
     end
 
