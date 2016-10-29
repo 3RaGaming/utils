@@ -13,7 +13,9 @@ local function update_position(event)
         if follow_target_index then
             local player = game.connected_players[player_index]
             local follow_target = game.connected_players[follow_target_index]
-            player.teleport(follow_target.position, follow_target.surface)
+            if follow_target then
+                player.teleport(follow_target.position, follow_target.surface)
+            end
         end
     end
 end
