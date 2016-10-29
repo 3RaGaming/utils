@@ -285,10 +285,9 @@ function toggle_follow_panel(player)
 end
 
 local function connected_players_changed(event)
-    local changed_player = game.players[event.player_index]
-    for player, follow_target in pairs(global.follow_targets) do
-        if player == changed_player or follow_target == changed_player then
-            global.follow_targets[player.index] = nil
+    for player_index, follow_target_index in pairs(global.follow_targets) do
+        if player_index == event.player_index or follow_target_index == event.player_index then
+            global.follow_targets[event.player_index] = nil
         end
     end
 
