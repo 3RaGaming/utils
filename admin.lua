@@ -9,8 +9,10 @@ global.original_position = {}
 global.original_surface = {}
 
 local function update_position(event)
-    for player, follow_target in pairs(global.follow_targets) do
-        if follow_target ~= nil then
+    for player_index, follow_target_index in pairs(global.follow_targets) do
+        if follow_target_index then
+            local player = game.connected_players[player_index]
+            local follow_target = game.connected_players[follow_target_index]
             player.teleport(follow_target.position, follow_target.surface)
         end
     end
@@ -139,18 +141,17 @@ local function gui_click(event)
         elseif e == "follow" then
             toggle_follow_panel(p)
         elseif e == "unfollow" then
-            global.follow_targets[p] = nil
---        elseif e == "return" then
---            global.follow_targets[p] = nil
---            p.print(global.original_position[p])
---            p.teleport(global.original_position[p],global.original_surface[p])
+            global.follow_targets[i] = nil
+        elseif e == "return" then
+            global.follow_targets[i] = nil
+            p.teleport(global.original_position[i], global.original_surface[i])
         end
         --set who to follow
         for _, player in pairs(game.connected_players) do
             if e == player.name then
-                global.original_position[p] = player.position
-                global.original_surface[p] = player.surface
-                global.follow_targets[p] = player
+                global.original_position[i] = player.position
+                global.original_surface[i] = player.surface
+                global.follow_targets[i] = player.index
             end
         end
     end
@@ -173,7 +174,7 @@ function create_character_gui(index)
     run_table.add { name = "run2_label", type = "label", caption = "2x" }
     run_table.add { name = "run3_label", type = "label", caption = "3x" }
     run_table.add { name = "run5_label", type = "label", caption = "5x" }
-    run_table.add { name = "run10_label", type = "label", caption = "10x" }
+    run_table.add { name = "run10git pull origin master_label", type = "label", caption = "10x" }
     run_table.add { name = "character_run1", type = "radiobutton", state = false }
     run_table.add { name = "character_run2", type = "radiobutton", state = false }
     run_table.add { name = "character_run3", type = "radiobutton", state = false }
@@ -264,14 +265,14 @@ local function update_follow_panel(player)
             follow_frame.add { name = player.name, type = "button", caption = player.name }
         end
         follow_frame.add { name = "unfollow", type = "button", caption = "Unfollow" }
-        follow_frame.add { name = "return", type = "button", caption = "Return"}
+        follow_frame.add { name = "return", type = "button", caption = "Return" }
     end
 end
 
 function toggle_follow_panel(player)
     if player.gui.left.follow_panel then
         player.gui.left.follow_panel.destroy()
-        global.follow_targets[player] = nil
+        global.follow_targets[player.index] = nil
     else
         player.gui.left.add { name = "follow_panel", type = "frame" }
         update_follow_panel(player)
@@ -282,7 +283,7 @@ local function connected_players_changed(event)
     local changed_player = game.players[event.player_index]
     for player, follow_target in pairs(global.follow_targets) do
         if player == changed_player or follow_target == changed_player then
-            global.follow_targets[player] = nil
+            global.follow_targets[player.index] = nil
         end
     end
 
