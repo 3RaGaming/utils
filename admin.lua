@@ -257,12 +257,15 @@ function update_character(index)
 end
 
 local function update_follow_panel(player)
+    local player_index = player.index
     if player.gui.left.follow_panel then
         player.gui.left.follow_panel.destroy()
 
         local follow_frame = player.gui.left.add { name = "follow_panel", type = "table", colspan = 10, caption = "Choose player to follow" }
         for _, player in pairs(game.connected_players) do
-            follow_frame.add { name = player.name, type = "button", caption = player.name }
+            if player.index ~= player_index  then
+                follow_frame.add { name = player.name, type = "button", caption = player.name }
+            end
         end
         follow_frame.add { name = "unfollow", type = "button", caption = "Unfollow" }
         follow_frame.add { name = "return", type = "button", caption = "Return" }
