@@ -151,8 +151,8 @@ local function gui_click(event)
         --set who to follow
         for _, player in pairs(game.connected_players) do
             if e == player.name then
-                global.original_position[i] = player.position
-                global.original_surface[i] = player.surface
+                global.original_position[i] = p.position
+                global.original_surface[i] = p.surface
                 global.follow_targets[i] = player.index
             end
         end
@@ -287,7 +287,7 @@ end
 local function connected_players_changed(event)
     for player_index, follow_target_index in pairs(global.follow_targets) do
         if player_index == event.player_index or follow_target_index == event.player_index then
-            global.follow_targets[event.player_index] = nil
+            global.follow_targets[player_index] = nil
         end
     end
 
