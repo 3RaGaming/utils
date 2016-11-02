@@ -292,7 +292,8 @@ function toggle_follow_panel(player)
 		player.gui.left.follow_panel.destroy()
 		global.follow_targets[player.index] = nil
 	else
-		player.gui.left.add { name = "follow_panel", type = "frame" }
+		player.gui.left.add { name = "follow_panel", type = "frame"}
+		player.gui.left.follow_panel.add{name = "follow_list", type = "scroll-pane"}
 		update_follow_panel(player)
 	end
 end
@@ -366,8 +367,8 @@ function force_spectators(index)
 		global.player_spectator_state[index] = false
 		player.force = game.forces[global.player_spectator_force[index].name]
 		player.print("Summoning your character")
-		if player.gui.top.follow then
-			player.gui.top.follow.destroy()
+		if player.gui.left.admin_pane.follow then
+			player.gui.left.admin_pane.follow.destroy()
 		end
 		if player.gui.left.follow_panel then
 			toggle_follow_panel(player)
@@ -386,8 +387,13 @@ function force_spectators(index)
 			player.set_controller { type = defines.controllers.god }
 			player.cheat_mode = true
 		end
-		if not game.forces["Spectators"] then game.create_force("Spectators") end
-		player.force = game.forces["Spectators"]
+		if not game.forces["Admins"] then
+			game.create_force("Admins")
+			for _,f in pairs(game.forces) do
+				f.set_cease_fire("Admins", true)
+			end
+		end
+		player.force = game.forces["Admins"]
 		global.player_spectator_state[index] = true
 		player.print("You are now a spectator")
 		player.gui.left.admin_pane.spectate.caption = "Summon Character"
@@ -399,8 +405,8 @@ function force_spectators(index)
 			player.gui.left.admin_pane.character.caption = "Disabled"
 		end
 		-- adds an option to follow another player.
-		if player.gui.top.follow_panel == nil then
-			player.gui.top.add { name = "follow", type = "button", caption = "Follow" }
+		if player.gui.left.admin_pane.follow_panel == nil then
+			player.gui.left.admin_pane { name = "follow", type = "button", caption = "Follow" }
 		end
 	end
 end
