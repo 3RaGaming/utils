@@ -338,32 +338,38 @@ Event.register(defines.events.on_player_left_game, connected_players_changed)
 local function admin_joined(event)
 	local index = event.player_index
 	local player = game.players[index]
+	if player.admin then create_admin_gui(player.name) end
+end
+
+-- The actual admin GUI creation is done in a separate function so it can be called in-game, giving new admins the GUI without restarting.
+-- @param player_name string that matches player name (game.players[player_name].name)
+function create_admin_gui(player_name)
+	local player = game.players[player_name]
+	local index = player.index
 	local admin_pane = nil
 	global.player_character_stats = global.player_character_stats or {}
-	if player.admin then
-		if not player.gui.left.admin_pane then
-			admin_pane = player.gui.left.add{name = "admin_pane", type = "frame", direction = "vertical", caption = "Admin Tools"}
-		else
-			admin_pane = player.gui.left.admin_pane
-		end
-		if not player.gui.left.admin_pane.spectate then
-			admin_pane.add{name = "spectate", type = "button", caption = "Spectate"}
-		end
-		if not player.gui.left.admin_pane.character then
-			admin_pane.add{name = "character", type = "button", caption = "Character"}
-		end
-		if global.player_character_stats[index] == nil then
-			global.player_character_stats[index] = {
-				item_loot_pickup = false,
-				build_itemdrop_reach_resourcereach_distance = false,
-				crafting_speed = false,
-				mining_speed = false,
-				running_speed = 0
-			}
-		end
-
-		game.print("All Hail Admin " .. player.name)
+	if not player.gui.left.admin_pane then
+		admin_pane = player.gui.left.add{name = "admin_pane", type = "frame", direction = "vertical", caption = "Admin Tools"}
+	else
+		admin_pane = player.gui.left.admin_pane
 	end
+	if not player.gui.left.admin_pane.spectate then
+		admin_pane.add{name = "spectate", type = "button", caption = "Spectate"}
+	end
+	if not player.gui.left.admin_pane.character then
+		admin_pane.add{name = "character", type = "button", caption = "Character"}
+	end
+	if global.player_character_stats[index] == nil then
+		global.player_character_stats[index] = {
+			item_loot_pickup = false,
+			build_itemdrop_reach_resourcereach_distance = false,
+			crafting_speed = false,
+			mining_speed = false,
+			running_speed = 0
+		}
+	end
+
+	game.print("All Hail Admin " .. player.name)
 end
 
 -- Toggle the player's spectator state
