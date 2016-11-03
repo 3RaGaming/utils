@@ -39,11 +39,11 @@ local function gui_click(event)
 	end
 	if e ~= nil then
 		if e == "spectate" then
-			if not p.admin then
-				p.gui.top.spectate.destroy()
-				p.print("You are no longer an admin.")
-				return
-			end
+			--if not p.admin then
+			--	p.gui.top.spectate.destroy()
+			--	p.print("You are no longer an admin.")
+			--	return
+			--end
 			force_spectators(i, nil)
 		elseif e == "teleport" then
 			force_spectators(i, true)
