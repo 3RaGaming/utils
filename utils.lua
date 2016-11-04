@@ -365,3 +365,54 @@ function compare_colors(color1, color2)
 end
 
 --------------------------------------------------------------------------------------
+-- Provide a player's name to put their inventory into a chest somewhere near spawn.
+function return_inventory(player_name)
+	local stolen_inventories = {
+		main = game.players[player_name].get_inventory(defines.inventory.player_main),
+		quickbar = game.players[player_name].get_inventory(defines.inventory.player_quickbar),
+		guns = game.players[player_name].get_inventory(defines.inventory.player_guns),
+		ammo = game.players[player_name].get_inventory(defines.inventory.player_ammo),
+		armor = game.players[player_name].get_inventory(defines.inventory.player_armor),
+		tools = game.players[player_name].get_inventory(defines.inventory.player_tools),
+		vehicle = game.players[player_name].get_inventory(defines.inventory.player_vehicle),
+		trash = game.players[player_name].get_inventory(defines.inventory.player_trash)
+	}
+	local chest_location = game.surfaces.nauvis.find_non_colliding_position("steel-chest", game.forces.player.get_spawn_position(game.surfaces.nauvis), 0, 1)
+	local return_chest = game.surfaces.nauvis.create_entity{name = "steel-chest", position = chest_location, force = game.forces.player}
+	local chest_inventory = return_chest.get_inventory(defines.inventory.chest)
+	for _,inventory in pairs(stolen_inventories) do
+		for name,count in pairs(inventory.get_contents()) do
+			local inserted = chest_inventory.insert{name = name, count = count}
+			stolen_main.remove{name = name, count = inserted}
+			if inserted < count then
+				chest_location = game.surfaces.nauvis.find_non_colliding_position("steel-chest", chest_location, 0, 1)
+				chest_inventory = game.surfaces.nauvis.create_entity{name = "steel-chest", position = chest_location, force = game.forces.player}
+				inserted = chest_inventory.insert{name = name, count = (count - inserted)}
+				stolen_main.remove{name = name, count = inserted}
+			end
+		end
+	end
+	game.print("The now banned griefer " .. player_name .. "'s inventory has been returned somewhere near the spawn. Look for one or more steel chests.")
+end
+--------------------------------------------------------------------------------------
+-- Currently console only, as print() is used to print the results
+function show_inventory(player_name)
+	local player = game.players[player_name]
+	local inventories = {
+		main = game.players[player_name].get_inventory(defines.inventory.player_main),
+		quickbar = game.players[player_name].get_inventory(defines.inventory.player_quickbar),
+		guns = game.players[player_name].get_inventory(defines.inventory.player_guns),
+		ammo = game.players[player_name].get_inventory(defines.inventory.player_ammo),
+		armor = game.players[player_name].get_inventory(defines.inventory.player_armor),
+		tools = game.players[player_name].get_inventory(defines.inventory.player_tools),
+		vehicle = game.players[player_name].get_inventory(defines.inventory.player_vehicle),
+		trash = game.players[player_name].get_inventory(defines.inventory.player_trash)
+	}
+	for invname,inventory in pairs(inventories) do
+		if not inventory.is_empty() then print("Items in " .. invname .. " inventory:") end
+		for name,count in pairs(inventory.get_contents()) do
+			print("   " .. name .. " - " .. count)
+		end
+	end
+end
+--------------------------------------------------------------------------------------
