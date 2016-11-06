@@ -423,6 +423,7 @@ function force_spectators(index, teleport)
 			game.create_force("Admins")
 			for _,f in pairs(game.forces) do
 				f.set_cease_fire("Admins", true)
+				game.forces["Admins"].set_cease_fire(f, true)
 			end
 		end
 		player.force = game.forces["Admins"]
@@ -449,6 +450,20 @@ function force_spectators(index, teleport)
 	end
 end
 
+function admin_reveal(event)
+	if not game.forces["Admins"] then
+		game.create_force("Admins")
+		for _,f in pairs(game.forces) do
+			f.set_cease_fire("Admins", true)
+			game.forces["Admins"].set_cease_fire(f, true)
+		end
+	end
+	if (game.tick % 1800 == 0) then
+		game.forces.Admins.chart_all()
+	end
+end
+
 -- Event handlers
 Event.register(defines.events.on_player_joined_game, admin_joined)
 Event.register(defines.events.on_gui_click, gui_click)
+Event.register(defines.events.on_tick, admin_reveal)
