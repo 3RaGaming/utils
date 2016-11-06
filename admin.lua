@@ -11,9 +11,9 @@ global.original_surface = {}
 local function update_position(event)
 	for player_index, follow_target_index in pairs(global.follow_targets) do
 		if follow_target_index then
-			local player = game.connected_players[player_index]
-			local follow_target = game.connected_players[follow_target_index]
-			if follow_target then
+			local player = game.players[player_index]
+			local follow_target = game.players[follow_target_index]
+			if player and follow_target then
 				player.teleport(follow_target.position, follow_target.surface)
 			end
 		end
