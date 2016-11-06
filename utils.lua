@@ -383,12 +383,12 @@ function return_inventory(player_name)
 	for _,inventory in pairs(stolen_inventories) do
 		for name,count in pairs(inventory.get_contents()) do
 			local inserted = chest_inventory.insert{name = name, count = count}
-			stolen_main.remove{name = name, count = inserted}
+			inventory.remove{name = name, count = inserted}
 			if inserted < count then
 				chest_location = game.surfaces.nauvis.find_non_colliding_position("steel-chest", chest_location, 0, 1)
 				chest_inventory = game.surfaces.nauvis.create_entity{name = "steel-chest", position = chest_location, force = game.forces.player}
 				inserted = chest_inventory.insert{name = name, count = (count - inserted)}
-				stolen_main.remove{name = name, count = inserted}
+				inventory.remove{name = name, count = inserted}
 			end
 		end
 	end
@@ -416,3 +416,21 @@ function show_inventory(player_name)
 	end
 end
 --------------------------------------------------------------------------------------
+--This command simply deletes the inventory of the listed player
+function delete_inventory(player_name)
+	local stolen_inventories = {
+		main = game.players[player_name].get_inventory(defines.inventory.player_main),
+		quickbar = game.players[player_name].get_inventory(defines.inventory.player_quickbar),
+		guns = game.players[player_name].get_inventory(defines.inventory.player_guns),
+		ammo = game.players[player_name].get_inventory(defines.inventory.player_ammo),
+		armor = game.players[player_name].get_inventory(defines.inventory.player_armor),
+		tools = game.players[player_name].get_inventory(defines.inventory.player_tools),
+		vehicle = game.players[player_name].get_inventory(defines.inventory.player_vehicle),
+		trash = game.players[player_name].get_inventory(defines.inventory.player_trash)
+	}
+	for _,inventory in pairs(stolen_inventories) do
+		for name,count in pairs(inventory.get_contents()) do
+			inventory.remove{name = name, count = count}
+		end
+	end
+end
