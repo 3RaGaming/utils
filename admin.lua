@@ -4,9 +4,9 @@
 global.green = { r = 0, g = 1, b = 0 }
 global.red = { r = 1, g = 0, b = 0 }
 
-global.follow_targets = {}
-global.original_position = {}
-global.original_surface = {}
+global.follow_targets = gobal.follow_targets or {}
+global.original_position = global.original_position or {}
+global.original_surface = global.original_surface or {}
 
 local function update_position(event)
 	for player_index, follow_target_index in pairs(global.follow_targets) do
