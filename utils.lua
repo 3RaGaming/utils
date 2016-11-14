@@ -434,3 +434,13 @@ function delete_inventory(player_name)
 		end
 	end
 end
+--------------------------------------------------------------------------------------
+--Send chat only to a specific force
+--name can be either the name of a player or the name of a force
+--message is the actual message to send
+function force_chat(name, message)
+	local force
+	if game.players[name] then force = game.players[name].force
+	else forces = game.forces[name]
+	force.print("[WEB] " .. message)
+end
