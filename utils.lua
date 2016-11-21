@@ -367,6 +367,16 @@ end
 --------------------------------------------------------------------------------------
 -- Provide a player's name to put their inventory into a chest somewhere near spawn.
 function return_inventory(player_name)
+	local success, err = pcall(return_inventory_p, player_name)
+	if not success then
+		game.print(err)
+		return
+	end
+	if err then
+		return
+	end
+end
+function return_inventory_p(player_name)
 	local stolen_inventories = {
 		main = game.players[player_name].get_inventory(defines.inventory.player_main),
 		quickbar = game.players[player_name].get_inventory(defines.inventory.player_quickbar),
@@ -397,6 +407,16 @@ end
 --------------------------------------------------------------------------------------
 -- Currently console only, as print() is used to print the results
 function show_inventory(player_name)
+	local success, err = pcall(show_inventory_p, player_name)
+	if not success then
+		game.print(err)
+		return
+	end
+	if err then
+		return
+	end
+end
+function show_inventory_p(player_name)
 	local player = game.players[player_name]
 	local inventories = {
 		main = game.players[player_name].get_inventory(defines.inventory.player_main),
@@ -418,6 +438,16 @@ end
 --------------------------------------------------------------------------------------
 --This command simply deletes the inventory of the listed player
 function delete_inventory(player_name)
+	local success, err = pcall(delete_inventory_p, player_name)
+	if not success then
+		game.print(err)
+		return
+	end
+	if err then
+		return
+	end
+end
+function delete_inventory_p(player_name)
 	local stolen_inventories = {
 		main = game.players[player_name].get_inventory(defines.inventory.player_main),
 		quickbar = game.players[player_name].get_inventory(defines.inventory.player_quickbar),
@@ -441,6 +471,6 @@ end
 function force_chat(name, message)
 	local force
 	if game.players[name] then force = game.players[name].force
-	else forces = game.forces[name]
-	force.print("[WEB] " .. message)
+	else force = game.forces[name] end
+	if force then force.print("[WEB] " .. message) end
 end
