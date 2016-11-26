@@ -238,5 +238,10 @@ local function on_player_died(event)
 	end
 end
 
+local function on_pre_player_died(event)
+	local player = game.players[event.player_index]
+	player.clean_cursor()
+end)
 
+Event.register(defines.events.on_pre_player_died, on_pre_player_died)
 Event.register(defines.events.on_player_died, on_player_died)
