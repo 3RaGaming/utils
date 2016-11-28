@@ -105,6 +105,16 @@ local function gui_click(event)
 				event.element.style.font_color = global.green
 				p.character_mining_speed_modifier = 150
 			end
+		elseif e == "character_invincible" then
+			if global.player_character_stats[i].invincible then
+				global.player_character_stats[i].invincible = false
+				event.element.style.font_color = global.red
+				p.character.destructible = false
+			else
+				global.player_character_stats[i].invincible = true
+				event.element.style.font_color = global.green
+				p.character.destructible = true
+			end
 		elseif e == "character_run1" then
 			local run_table = event.element.parent
 			run_table.character_run1.state = true
@@ -170,6 +180,8 @@ local function gui_click(event)
 				global.follow_targets[i] = player.index
 				if not p.gui.left.follow_panel.follow_list.unfollow then p.gui.left.follow_panel.follow_list.add { name = "unfollow", type = "button", caption = "Unfollow" } end
 				if not p.gui.left.follow_panel.follow_list.return_button then p.gui.left.follow_panel.follow_list.add { name = "return_button", type = "button", caption = "Return" } end
+				p.gui.left.follow_panel.follow_list.unfollow.style.font = "default"
+				p.gui.left.follow_panel.follow_list.return_button.style.font = "default"
 			end
 		end
 	end
@@ -184,6 +196,7 @@ function create_character_gui(index)
 	character_frame.add { name = "character_reach", type = "button", caption = "Reach" }
 	character_frame.add { name = "character_craft", type = "button", caption = "Crafting" }
 	character_frame.add { name = "character_mine", type = "button", caption = "Mining" }
+	character_frame.add { name = "character_invincible", type = "button", caption = "Invincible" }
 	character_frame.add { name = "run_label", type = "label", caption = "Run speed control:" }
 	local run_table = character_frame.add { name = "character_run", type = "table", colspan = 5, caption = "Run Speed" }
 	run_table.add { name = "run1_label", type = "label", caption = "1x" }
@@ -227,6 +240,12 @@ function update_character_settings(index)
 		char_gui.character_mine.style.font_color = global.green
 	else
 		char_gui.character_mine.style.font_color = global.red
+	end
+	
+	if settings.invincible then
+		char_gui.character_invincible.style.font_color = global.green
+	else
+		char_gui.character_invincible.style.font_color = global.red
 	end
 
 	local run_table = char_gui.character_run
@@ -278,6 +297,12 @@ function update_character(index)
 	else
 		player.character_mining_speed_modifier = 0
 	end
+	
+	if settings.invincible then
+		player.character.destructible = true
+	else
+		player.character.destructible = false
+	end
 
 	player.character_running_speed_modifier = settings.running_speed
 end
@@ -290,22 +315,25 @@ local function update_follow_panel(player)
 		if player.gui.left.follow_panel.follow_list then player.gui.left.follow_panel.follow_list.destroy() end
 
 		local follow_list = player.gui.left.follow_panel.add { name = "follow_list", type = "scroll-pane" }
-		-- List of heights:
-		-- Title + 1 button = 45
-		-- Title + 2 buttons = 95
-		-- Title + 3 buttons = 140
-		-- Title + 4 buttons = 190
-		-- The height of a single button is likely not a multiple of 5, which is why these numbers are weird.
-		follow_list.style.maximal_height = 140
+		follow_list.style.maximal_height = 190
 
 		if #game.connected_players == 1 then
 			follow_list.add { name = "no_player_label", type = "label", caption = "There are no players to follow" }
 		else
 			for _, follow_player in pairs(game.connected_players) do
 				if player.index ~= follow_player.index then
-					follow_list.add { name = follow_player.name, type = "button", caption = follow_player.name }
+					local label = follow_list.add{name = follow_player.name, type = "button", caption = follow_player.name}
+					label.style.font = "default"
 				end
 			end
+		end
+		
+		-- Readd Unfollow and Return buttons if already following a player
+		if global.follow_targets[player_index] then
+			local button1 = follow_list.add{name = "unfollow", type = "button", caption = "Unfollow"}
+			local button2 = follow_list.add{name = "return_button", type = "button", caption = "Return"}
+			button1.style.font = "default"
+			button2.style.font = "default"
 		end
 	end
 end
@@ -326,6 +354,9 @@ local function connected_players_changed(event)
 	for player_index, follow_target_index in pairs(global.follow_targets) do
 		if player_index == event.player_index or follow_target_index == event.player_index then
 			global.follow_targets[player_index] = nil
+			if follow_target_index == event.player_index then
+				game.players[player_index].print("Follow target disconnected.")
+			end
 		end
 	end
 
@@ -371,6 +402,7 @@ function create_admin_gui(player_name)
 			build_itemdrop_reach_resourcereach_distance = false,
 			crafting_speed = false,
 			mining_speed = false,
+			invincible = false,
 			running_speed = 0
 		}
 	end
@@ -419,6 +451,7 @@ function force_spectators(index, teleport)
 	else
 		--put player in spectator mode
 		if player.character then
+			player.character.destructible = false
 			player.walking_state = { walking = false, direction = defines.direction.north }
 			global.player_spectator_character[index] = player.character
 			global.player_spectator_force[index] = player.force
