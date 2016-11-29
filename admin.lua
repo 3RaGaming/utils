@@ -299,9 +299,9 @@ function update_character(index)
 	end
 	
 	if settings.invincible then
-		player.character.destructible = true
-	else
 		player.character.destructible = false
+	else
+		player.character.destructible = true
 	end
 
 	player.character_running_speed_modifier = settings.running_speed
