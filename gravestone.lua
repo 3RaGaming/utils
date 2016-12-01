@@ -123,7 +123,21 @@ local function on_player_died(event)
 											local pos = equip.position
 											if not itemstack.grid.put{name = name, position = pos} then fail = true end
 										end
+										if fail then player.print("Failed to save modules for armor " + item.name) end
 										break
+									end
+								end
+							end
+							
+							if item.is_blueprint_setup() then
+								for k = 1, #chestinventory, 1 do
+									local chestitem = chestinventory[k]
+									if chestitem.valid and chestitem.valid_for_read and (not chestitem.is_blueprint_setup()) then
+										chestitem.set_blueprint_entities(item.get_blueprint_entities())
+										chestitem.set_blueprint_tiles(item.get_blueprint_tiles())
+										chestitem.blueprint_icons = item.blueprint_icons
+										chestitem.label = item.label
+										chestitem.label_color = item.label_color
 									end
 								end
 							end
