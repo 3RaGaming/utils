@@ -112,7 +112,7 @@ local function on_player_died(event)
 									end
 								end
 							end
-							
+
 							if item.grid then
 								for k = 1, #chestinventory, 1 do
 									local itemstack = chestinventory[k]
@@ -128,20 +128,25 @@ local function on_player_died(event)
 									end
 								end
 							end
-							
-							if item.is_blueprint_setup() then
+
+							if item.name == "blueprint" and item.is_blueprint_setup() then
 								for k = 1, #chestinventory, 1 do
 									local chestitem = chestinventory[k]
-									if chestitem.valid and chestitem.valid_for_read and (not chestitem.is_blueprint_setup()) then
+									if chestitem.valid and chestitem.valid_for_read and chestitem.name == "blueprint" and (not chestitem.is_blueprint_setup()) then
 										chestitem.set_blueprint_entities(item.get_blueprint_entities())
 										chestitem.set_blueprint_tiles(item.get_blueprint_tiles())
 										chestitem.blueprint_icons = item.blueprint_icons
-										chestitem.label = item.label
-										chestitem.label_color = item.label_color
+										if item.label then
+											chestitem.label = item.label
+										end
+										if chestitem.label_color then
+											chestitem.label_color = item.label_color
+										end
+										break;
 									end
 								end
 							end
-							
+
 						end
 					end --[[ end for #playerinventory ]] --
 				else --[[ break if unable to spawn new chest ]] --
