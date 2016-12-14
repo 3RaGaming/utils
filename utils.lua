@@ -393,12 +393,16 @@ function return_inventory_p(player_name)
 	for _,inventory in pairs(stolen_inventories) do
 		for name,count in pairs(inventory.get_contents()) do
 			local inserted = chest_inventory.insert{name = name, count = count}
-			inventory.remove{name = name, count = inserted}
+			if inserted > 0 then
+				inventory.remove{name = name, count = inserted}
+			end
 			if inserted < count then
 				chest_location = game.surfaces.nauvis.find_non_colliding_position("steel-chest", chest_location, 0, 1)
 				chest_inventory = game.surfaces.nauvis.create_entity{name = "steel-chest", position = chest_location, force = game.forces.player}
 				inserted = chest_inventory.insert{name = name, count = (count - inserted)}
-				inventory.remove{name = name, count = inserted}
+				if inserted > 0 then
+					inventory.remove{name = name, count = inserted}
+				end
 			end
 		end
 	end

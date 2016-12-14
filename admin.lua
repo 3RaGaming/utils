@@ -21,8 +21,24 @@ local function update_position(event)
 end
 
 Event.register(defines.events.on_tick, update_position)
+Event.register(-1, function()
+	game.create_force("Admins")
+	game.forces.Admins.research_all_technologies()
+end)
 
+Event.register(defines.events.on_force_created, function(event)
+	event.force.set_cease_fire(game.forces.Admin, true)
+	game.forces.Admin.set_cease_fire(event.force, true)
+end)
 
+function entity_mined(event)
+	local entity = event.entity
+	if entity.name == "entity-ghost" or game.players[event.player_index].force == game.forces.Admins then return end
+	local ghost = entity.surface.create_entity{name="entity-ghost", force=game.forces.Admins, inner_name=entity.name, position=entity.position, direction = entity.direction}
+	ghost.last_user = game.players[event.player_index]
+end
+
+Event.register(defines.events.on_preplayer_mined_item, entity_mined)
 -- Handle various gui clicks, either spectate or character modification
 -- @param event gui click event
 local function gui_click(event)
@@ -241,7 +257,7 @@ function update_character_settings(index)
 	else
 		char_gui.character_mine.style.font_color = global.red
 	end
-	
+
 	if settings.invincible then
 		char_gui.character_invincible.style.font_color = global.green
 	else
@@ -297,7 +313,7 @@ function update_character(index)
 	else
 		player.character_mining_speed_modifier = 0
 	end
-	
+
 	if settings.invincible then
 		player.character.destructible = false
 	else
@@ -327,7 +343,7 @@ local function update_follow_panel(player)
 				end
 			end
 		end
-		
+
 		-- Readd Unfollow and Return buttons if already following a player
 		if global.follow_targets[player_index] then
 			local button1 = follow_list.add{name = "unfollow", type = "button", caption = "Unfollow"}
@@ -458,13 +474,6 @@ function force_spectators(index, teleport)
 			player.set_controller { type = defines.controllers.god }
 			player.cheat_mode = true
 		end
-		if not game.forces["Admins"] then
-			game.create_force("Admins")
-			for _, f in pairs(game.forces) do
-				f.set_cease_fire("Admins", true)
-				game.forces["Admins"].set_cease_fire(f, true)
-			end
-		end
 		player.force = game.forces["Admins"]
 		global.player_spectator_state[index] = true
 		player.print("You are now a spectator")
@@ -490,13 +499,6 @@ function force_spectators(index, teleport)
 end
 
 function admin_reveal(event)
-	if not game.forces["Admins"] then
-		game.create_force("Admins")
-		for _, f in pairs(game.forces) do
-			f.set_cease_fire("Admins", true)
-			game.forces["Admins"].set_cease_fire(f, true)
-		end
-	end
 	if (game.tick % 1800 == 0) then
 		game.forces.Admins.chart_all()
 	end
