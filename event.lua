@@ -81,7 +81,10 @@ function Event.dispatch(event)
 			local success, err = pcall(handler, event)
 			if not success then
 				-- may be nil in on_load
-				game.print(err)
+				if game then
+					game.print(err:sub(err:find("/currently") or 1, string.len(err)))
+				end
+				print("output$"..err:sub(err:find("/currently") or 1, string.len(err)))
 				return
 			end
 			if err then
@@ -119,5 +122,4 @@ function Event.remove(event, handler)
 	end
 	return Event
 end
-
 return Event
