@@ -479,7 +479,7 @@ function force_spectators(index, teleport)
 			global.player_spectator_character[index] = player.character
 			global.player_spectator_force[index] = player.force
 			--store character logistics slots due to an apparent bug in the base game that discards them when returning from spectate
-			global.player_spectator_logistics_slots[index] = global.player_spectator_logistics_slots[index] or {}
+			global.player_spectator_logistics_slots[index] = {}
 			for slot=1, player.character.request_slot_count do
 				global.player_spectator_logistics_slots[index][slot] = player.character.get_request_slot(slot)
 			end
