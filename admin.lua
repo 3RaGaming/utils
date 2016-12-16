@@ -433,6 +433,7 @@ function force_spectators(index, teleport)
 	global.player_spectator_state = global.player_spectator_state or {}
 	global.player_spectator_character = global.player_spectator_character or {}
 	global.player_spectator_force = global.player_spectator_force or {}
+	global.player_spectator_logistics_slots = global.player_spectator_logistics_slots or {}
 	if global.player_spectator_state[index] then
 		--remove spectator mode
 		if player.character == nil then
@@ -445,6 +446,12 @@ function force_spectators(index, teleport)
 				player.set_controller { type = defines.controllers.character, character = player.surface.create_entity { name = "player", position = { 0, 0 }, force = global.player_spectator_force[index] } }
 				player.insert { name = "pistol", count = 1 }
 				player.insert { name = "firearm-magazine", count = 10 }
+			end
+			--restore character logistics slots due to bug in base game that clears them after returning from spectator mode
+			for slot=1, player.character.request_slot_count do
+				if global.player_spectator_logistics_slots[index][slot] then
+					player.character.set_request_slot(global.player_spectator_logistics_slots[index][slot], slot)
+				end
 			end
 			if teleport then
 				player.print("Teleporting you to the location you are currently looking at.")
@@ -471,6 +478,11 @@ function force_spectators(index, teleport)
 			player.walking_state = { walking = false, direction = defines.direction.north }
 			global.player_spectator_character[index] = player.character
 			global.player_spectator_force[index] = player.force
+			--store character logistics slots due to an apparent bug in the base game that discards them when returning from spectate
+			global.player_spectator_logistics_slots[index] = {}
+			for slot=1, player.character.request_slot_count do
+				global.player_spectator_logistics_slots[index][slot] = player.character.get_request_slot(slot)
+			end
 			player.set_controller { type = defines.controllers.god }
 			player.cheat_mode = true
 		end
