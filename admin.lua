@@ -27,8 +27,8 @@ Event.register(-1, function()
 end)
 
 Event.register(defines.events.on_force_created, function(event)
-	event.force.set_cease_fire(game.forces.Admin, true)
-	game.forces.Admin.set_cease_fire(event.force, true)
+	event.force.set_cease_fire(game.forces.Admins, true)
+	game.forces.Admins.set_cease_fire(event.force, true)
 end)
 
 function entity_mined(event)
