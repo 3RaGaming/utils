@@ -33,8 +33,17 @@ end)
 
 function entity_mined(event)
 	local entity = event.entity
-	if entity.force.name == "neutral" or entity.name == "entity-ghost" or entity.type == "locomotive" or entity.type == "cargo-wagon" or entity.type == "car" or entity.type:find("robot") or game.players[event.player_index].force == game.forces.Admins then return end
-	local ghost = entity.surface.create_entity{name="entity-ghost", force=game.forces.Admins, inner_name=entity.name, position=entity.position, direction = entity.direction}
+	if entity.force.name == "neutral" 
+	or entity.name == "entity-ghost" 
+	or entity.type == "locomotive" 
+	or entity.type == "cargo-wagon" 
+	or entity.type == "car" 
+	or entity.type:find("robot") 
+	or game.players[event.player_index].force == game.forces.Admins 
+	or entity.name == "tile-ghost"
+	then return end
+	local ghost = entity.surface.create_entity
+	{name="entity-ghost",	force=game.forces.Admins, inner_name=entity.name, position=entity.position, direction = entity.direction}
 	ghost.last_user = game.players[event.player_index]
 end
 
