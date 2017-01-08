@@ -479,6 +479,15 @@ function force_chat(name, message)
 	if force then force.print("[WEB] " .. message) end
 end
 
+function check_name(function_name)
+	for i,v in pairs(global.scenario.custom_functions) do
+		if v.name == function_name:lower() then
+			return i
+		end
+	end
+	return false
+end
+
 function add_global_event(event, func, name)
 	local p = game.player and game.player.print or print
 	if not event then p("Missing event parameter") return end
