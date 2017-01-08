@@ -81,14 +81,13 @@ function Event.dispatch(event)
 			local success, err = pcall(handler, event)
 			if not success then
 				-- may be nil in on_load
-				if game then
-					game.print(err:sub(err:find("/currently") or 1, string.len(err)))
+				local identifier
+				for i,v in pairs(defines.events) do
+					if v == event.name then
+						identifier = i
+					end
 				end
-				print("output$"..err:sub(err:find("/currently") or 1, string.len(err)))
-				return
-			end
-			if err then
-				return
+				print("output$Error in event "..identifier or event.name..", \""..err.."\".")
 			end
 		end
 	end
