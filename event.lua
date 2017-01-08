@@ -87,7 +87,12 @@ function Event.dispatch(event)
 						identifier = i
 					end
 				end
-				print("output$Error in event "..identifier or event.name..", \""..err.."\".")
+				if event.name < -1 or global.last_error ~= err then
+					print("output$Error in event "..identifier or event.name..", \""..err.."\".")
+					if event.name > -2 then
+						global.last_error = err
+					end
+				end
 			end
 		end
 	end
