@@ -81,16 +81,18 @@ function Event.dispatch(event)
 			local success, err = pcall(handler, event)
 			if not success then
 				-- may be nil in on_load
-				local identifier
+				local identifier = event.name
 				for i,v in pairs(defines.events) do
 					if v == event.name then
 						identifier = i
 					end
 				end
-				if event.name < -1 or global.last_error ~= err then
-					print("output$Error in event "..identifier or event.name..", \""..err.."\".")
+				err = string.gsub(err, "\n", " : ")
+				if event.name < -1 or global.last_error ~= identifier then
+					print("output$Error in event "..identifier..": \""..err.."\".")
+					log("Error in event "..identifier..": \""..err.."\".")
 					if event.name > -2 then
-						global.last_error = err
+						global.last_error = identifier
 					end
 				end
 			end
