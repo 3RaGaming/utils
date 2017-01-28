@@ -21,6 +21,12 @@ local function update_position(event)
 end
 
 Event.register(defines.events.on_tick, update_position)
+
+function change_spectate()
+	if spectate = true then
+	
+end
+
 Event.register(-1, function()
 	game.create_force("Admins")
 	game.forces.Admins.research_all_technologies()
@@ -48,6 +54,8 @@ function entity_mined(event)
 end
 
 Event.register(defines.events.on_preplayer_mined_item, entity_mined)
+
+
 -- Handle various gui clicks, either spectate or character modification
 -- @param event gui click event
 local function gui_click(event)
