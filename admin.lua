@@ -4,7 +4,9 @@
 global.green = { r = 0, g = 1, b = 0 }
 global.red = { r = 1, g = 0, b = 0 }
 
+-- values here are player ids from game.connected_players, which is different from game.players
 global.follow_targets = global.follow_targets or {}
+
 global.original_position = global.original_position or {}
 global.original_surface = global.original_surface or {}
 
@@ -332,6 +334,13 @@ function update_character(index)
 	player.character_running_speed_modifier = settings.running_speed
 end
 
+
+--[[ Follow logic works as follows:
+When panel is opened, for each connected player a button is created.
+When button is pressed, a key-value pair is added to global.follow_targets and every few ticks the admins camera position is updated to match that of the followed player.
+We also save the camera postion of the admin before they started following anyone, so that we can return to that position later.
+This panel is also updated when connected players change, such as play joins or disconnects.
+]]
 local function update_follow_panel(player)
 	local player_index = player.index
 
