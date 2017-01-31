@@ -1,11 +1,18 @@
 -- @module admin
 -- A 3Ra Gaming creation
 
+
+-- BTW, this is getting to long, needs some refactoring
+-- Also need a more combined GUI framework
+
 global.green = { r = 0, g = 1, b = 0 }
 global.red = { r = 1, g = 0, b = 0 }
 
 -- values here are player ids from game.connected_players, which is different from game.players
 global.follow_targets = global.follow_targets or {}
+
+-- values here are player index in connected players
+global.rotation_index = {}
 
 global.original_position = global.original_position or {}
 global.original_surface = global.original_surface or {}
@@ -35,17 +42,18 @@ end)
 
 function entity_mined(event)
 	local entity = event.entity
-	if entity.force.name == "neutral" 
-	or entity.name == "entity-ghost" 
-	or entity.type == "locomotive" 
-	or entity.type == "cargo-wagon" 
-	or entity.type == "car" 
-	or entity.type:find("robot") 
-	or game.players[event.player_index].force == game.forces.Admins 
-	or entity.name == "tile-ghost"
-	then return end
+	if entity.force.name == "neutral"
+			or entity.name == "entity-ghost"
+			or entity.type == "locomotive"
+			or entity.type == "cargo-wagon"
+			or entity.type == "car"
+			or entity.type:find("robot")
+			or game.players[event.player_index].force == game.forces.Admins
+			or entity.name == "tile-ghost"
+	then return
+	end
 	local ghost = entity.surface.create_entity
-	{name="entity-ghost",	force=game.forces.Admins, inner_name=entity.name, position=entity.position, direction = entity.direction}
+		{ name = "entity-ghost", force = game.forces.Admins, inner_name = entity.name, position = entity.position, direction = entity.direction }
 	ghost.last_user = game.players[event.player_index]
 end
 
@@ -198,6 +206,8 @@ local function gui_click(event)
 			p.teleport(global.original_position[i], global.original_surface[i])
 			p.gui.left.follow_panel.follow_list.unfollow.destroy()
 			p.gui.left.follow_panel.follow_list.return_button.destroy()
+		elseif e == "cycle" then
+			toggle_cycling(p)
 		end
 		--set who to follow
 		for _, player in pairs(game.connected_players) do
@@ -356,16 +366,16 @@ local function update_follow_panel(player)
 		else
 			for _, follow_player in pairs(game.connected_players) do
 				if player.index ~= follow_player.index then
-					local label = follow_list.add{name = follow_player.name, type = "button", caption = follow_player.name}
+					local label = follow_list.add { name = follow_player.name, type = "button", caption = follow_player.name }
 					label.style.font = "default"
 				end
 			end
 		end
 
-		-- Readd Unfollow and Return buttons if already following a player
+		-- Read Unfollow and Return buttons if already following a player
 		if global.follow_targets[player_index] then
-			local button1 = follow_list.add{name = "unfollow", type = "button", caption = "Unfollow"}
-			local button2 = follow_list.add{name = "return_button", type = "button", caption = "Return"}
+			local button1 = follow_list.add { name = "unfollow", type = "button", caption = "Unfollow" }
+			local button2 = follow_list.add { name = "return_button", type = "button", caption = "Return" }
 			button1.style.font = "default"
 			button2.style.font = "default"
 		end
@@ -466,7 +476,7 @@ function force_spectators(index, teleport)
 				player.insert { name = "firearm-magazine", count = 10 }
 			end
 			--restore character logistics slots due to bug in base game that clears them after returning from spectator mode
-			for slot=1, player.character.request_slot_count do
+			for slot = 1, player.character.request_slot_count do
 				if global.player_spectator_logistics_slots[index][slot] then
 					player.character.set_request_slot(global.player_spectator_logistics_slots[index][slot], slot)
 				end
@@ -498,7 +508,7 @@ function force_spectators(index, teleport)
 			global.player_spectator_force[index] = player.force
 			--store character logistics slots due to an apparent bug in the base game that discards them when returning from spectate
 			global.player_spectator_logistics_slots[index] = {}
-			for slot=1, player.character.request_slot_count do
+			for slot = 1, player.character.request_slot_count do
 				global.player_spectator_logistics_slots[index][slot] = player.character.get_request_slot(slot)
 			end
 			player.set_controller { type = defines.controllers.god }
@@ -521,12 +531,62 @@ function force_spectators(index, teleport)
 		if player.gui.left.admin_pane.character ~= nil then
 			player.gui.left.admin_pane.character.caption = "Disabled"
 		end
+
+		-- Separate button for cycling through players
+		local label = spectate_panel.add { name = "cycle", type = "button", caption = "Cycle" }
+
 		-- adds an option to follow another player.
 		if spectate_panel.follow_panel == nil then
 			spectate_panel.add { name = "follow", type = "button", caption = "Follow" }
 		end
 	end
 end
+
+function toggle_cycling(player)
+	if global.rotation_index[player.index] then
+		global.rotation_index[player.index] = nil
+		global.follow_target[player.index] = nil
+		player.gui.left.spectate_panel.add { name = "follow", type = "button", caption = "Follow" }
+	else
+		global.rotation_index[player.index] = 0
+		player.gui.left.spectate_panel.follow.destroy()
+	end
+end
+
+function tablelength(T)
+	local count = 0
+	for _ in pairs(T) do count = count + 1 end
+	return count
+end
+
+function get_key_by_index(T, index)
+	count = 0
+	for key,_ in pair(T) do
+		if count == index then
+			return key
+		end
+		count = count + 1
+	end
+	return nil
+end
+
+function update_cycle_index(event)
+	players = game.connected_players
+	table.sort(players) -- very important, we need to keep array sorted
+	-- in future probably should be able to choose rotation speed, now it changes every 5 sec
+	if (game.tick % 300 == 0) then
+		for player_index, follow_index in pairs(global.rotation_index) do
+			global.rotation_index[player_index] = global.rotation_index[player_index] + 1
+			if global.rotation_index[player_index] >= tablelength(players) then
+				global.rotation_index[player_index] = 0
+			end
+--			This might not be needed we might be able just use "global.rotation_index[player_index]" directly
+			global.follow_targets[player_index] = get_key_by_index(players,global.rotation_index[player_index])
+		end
+	end
+end
+
+Event.register(defines.events.on_tick, update_cycle_index)
 
 function admin_reveal(event)
 	if (game.tick % 1800 == 0) then
