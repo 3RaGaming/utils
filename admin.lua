@@ -24,8 +24,16 @@ end
 
 Event.register(defines.events.on_tick, update_position)
 Event.register(-1, function()
-	game.create_force("Admins")
-	game.forces.Admins.research_all_technologies()
+	if not game.forces["Admins"] then
+		game.create_force("Admins")
+		game.forces.Admins.research_all_technologies()
+		for _,force in pairs(game.forces) do
+			if force.name ~= "Admins" then
+				force.set_cease_fire("Admins", true)
+				game.forces["Admins"].set_cease_fire(force.name, true)
+			end
+		end
+	end
 end)
 
 Event.register(defines.events.on_force_created, function(event)
@@ -476,8 +484,6 @@ function force_spectators(index, teleport)
 				player.teleport(pos)
 			end
 		end
-		global.player_spectator_state[index] = false
-		player.force = game.forces[global.player_spectator_force[index].name]
 		if player.gui.left.spectate_panel then
 			player.gui.left.spectate_panel.destroy()
 		end
@@ -489,6 +495,8 @@ function force_spectators(index, teleport)
 			player.gui.left.admin_pane.character.caption = "Character"
 		end
 		update_character(index)
+		global.player_spectator_state[index] = false
+		player.force = game.forces[global.player_spectator_force[index].name]
 	else
 		--put player in spectator mode
 		if player.character then
