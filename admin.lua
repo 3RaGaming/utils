@@ -52,9 +52,10 @@ function entity_mined(event)
 	or entity.type:find("robot") 
 	or game.players[event.player_index].force == game.forces.Admins 
 	or entity.name == "tile-ghost"
-        or entity.has_flag('not-blueprintable')
+        or entity.name == 'item-request-proxy'
         or (game and game.active_mods.base:sub(1,4) == '0.14' and (entity.type == 'underground-belt' or entity.type == 'electric-pole'))
 	then return end
+	log("Recreating as ghost: "..entity.name.." (name), "..entity.type.." (type).")
 	local ghost = entity.surface.create_entity
 	{name="entity-ghost",	force=game.forces.Admins, inner_name=entity.name, position=entity.position, direction = entity.direction}
 	ghost.last_user = game.players[event.player_index]
