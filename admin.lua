@@ -27,6 +27,7 @@ Event.register(-1, function()
 	if not game.forces["Admins"] then
 		game.create_force("Admins")
 		game.forces.Admins.research_all_technologies()
+	        game.forces.Admins.ghost_time_to_live = 5 * (60^3) -- 5 hours
 		for _,force in pairs(game.forces) do
 			if force.name ~= "Admins" then
 				force.set_cease_fire("Admins", true)
@@ -51,6 +52,8 @@ function entity_mined(event)
 	or entity.type:find("robot") 
 	or game.players[event.player_index].force == game.forces.Admins 
 	or entity.name == "tile-ghost"
+        or entity.has_flag('not-blueprintable')
+        or (game and game.active_mods.base:sub(1,4) == '0.14' and (entity.type == 'underground-pipe' or entity.type == 'electric-pole'))
 	then return end
 	local ghost = entity.surface.create_entity
 	{name="entity-ghost",	force=game.forces.Admins, inner_name=entity.name, position=entity.position, direction = entity.direction}
