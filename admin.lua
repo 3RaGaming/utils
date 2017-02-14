@@ -464,6 +464,7 @@ function force_spectators(index, teleport)
 	global.player_spectator_character = global.player_spectator_character or {}
 	global.player_spectator_force = global.player_spectator_force or {}
 	global.player_spectator_logistics_slots = global.player_spectator_logistics_slots or {}
+	global.player_spectator_logistics_slots[index] = global.player_spectator_logistics_slots[index] or {}
 	if global.player_spectator_state[index] then
 		--remove spectator mode
 		if player.character == nil then
