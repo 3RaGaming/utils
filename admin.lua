@@ -502,6 +502,7 @@ function force_spectators(index, teleport)
 		update_character(index)
 		global.player_spectator_state[index] = false
 		player.force = game.forces[global.player_spectator_force[index].name]
+		player.cheat_mode = false
 	else
 		--put player in spectator mode
 		if player.character then
