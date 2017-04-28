@@ -148,11 +148,11 @@ local function gui_click(event)
 			if global.player_character_stats[i].invincible then
 				global.player_character_stats[i].invincible = false
 				event.element.style.font_color = global.red
-				p.character.destructible = false
+				p.character.destructible = true
 			else
 				global.player_character_stats[i].invincible = true
 				event.element.style.font_color = global.green
-				p.character.destructible = true
+				p.character.destructible = false
 			end
 		elseif e == "character_run1" then
 			local run_table = event.element.parent
