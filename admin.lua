@@ -65,9 +65,14 @@ Event.register(defines.events.on_preplayer_mined_item, entity_mined)
 -- Handle various gui clicks, either spectate or character modification
 -- @param event gui click event
 local function gui_click(event)
+	if not event.element then return end
 	local i = event.player_index
 	local p = game.players[i]
 	local e = event.element.name
+	if not p.admin then
+		-- TODO: Destroy admin GUIs if they exist
+		return
+	end
 	if e == "character" and event.element.caption == "Disabled" then
 		p.print("Character modification disabled in Spectator mode.")
 		return
@@ -212,8 +217,9 @@ local function gui_click(event)
 			p.gui.left.follow_panel.follow_list.return_button.destroy()
 		end
 		--set who to follow
+		if not event.element then return end
 		for _, player in pairs(game.connected_players) do
-			if e == player.name then
+			if e == "follow_player_" .. player.name then
 				global.original_position[i] = p.position
 				global.original_surface[i] = p.surface
 				global.follow_targets[i] = player.index
@@ -316,10 +322,12 @@ function update_character(index)
 	end
 
 	if settings.build_itemdrop_reach_resourcereach_distance then
+		player.character_build_distance_bonus =  125
 		player.character_item_drop_distance_bonus = 125
 		player.character_reach_distance_bonus = 125
 		player.character_resource_reach_distance_bonus = 125
 	else
+		player.character_build_distance_bonus = 0
 		player.character_item_drop_distance_bonus = 0
 		player.character_reach_distance_bonus = 0
 		player.character_resource_reach_distance_bonus = 0
@@ -368,7 +376,7 @@ local function update_follow_panel(player)
 		else
 			for _, follow_player in pairs(game.connected_players) do
 				if player.index ~= follow_player.index then
-					local label = follow_list.add{name = follow_player.name, type = "button", caption = follow_player.name}
+					local label = follow_list.add{name = "follow_player_" .. follow_player.name, type = "button", caption = follow_player.name}
 					label.style.font = "default"
 				end
 			end
