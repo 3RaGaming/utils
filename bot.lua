@@ -26,13 +26,6 @@ Event.register(defines.events.on_player_left_game, function (event)
 	end
 end)
 
-Event.register(defines.events.on_player_left_game, function (event)
-	local player = game.players[event.player_index]
-	if player.name ~= nil then
-		print("PLAYER$leave," .. player.index .. "," .. player.name .. "," .. player.force.name)
-	end
-end)
-
 Event.register(defines.events.on_player_changed_force, function (event)
 	local player = game.players[event.player_index]
 	if (player.force.name == "Admins") then return end
