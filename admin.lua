@@ -48,12 +48,13 @@ function entity_mined(event)
 	or entity.name == "entity-ghost" 
 	or entity.type == "locomotive" 
 	or entity.type == "cargo-wagon" 
+	or entity.type == "fluid-wagon"
 	or entity.type == "car" 
 	or entity.type:find("robot") 
 	or game.players[event.player_index].force == game.forces.Admins 
 	or entity.name == "tile-ghost"
-        or entity.name == 'item-request-proxy'
-        or (game and game.active_mods.base:sub(1,4) == '0.14' and (entity.type == 'underground-belt' or entity.type == 'electric-pole'))
+    or entity.name == 'item-request-proxy'
+    or (game and game.active_mods.base:sub(1,4) == '0.14' and (entity.type == 'underground-belt' or entity.type == 'electric-pole'))
 	then return end
 	log("Recreating as ghost: "..entity.name.." (name), "..entity.type.." (type).")
 	local ghost = entity.surface.create_entity
@@ -65,13 +66,13 @@ Event.register(defines.events.on_preplayer_mined_item, entity_mined)
 -- Handle various gui clicks, either spectate or character modification
 -- @param event gui click event
 local function gui_click(event)
-	if not event.element then return end
+    if not event.element then return end
 	local i = event.player_index
 	local p = game.players[i]
 	local e = event.element.name
 	if not p.admin then
-		-- TODO: Destroy admin GUIs if they exist
-		return
+	-- TODO: Destroy admin GUIs if they exist
+    	return
 	end
 	if e == "character" and event.element.caption == "Disabled" then
 		p.print("Character modification disabled in Spectator mode.")
@@ -153,11 +154,11 @@ local function gui_click(event)
 			if global.player_character_stats[i].invincible then
 				global.player_character_stats[i].invincible = false
 				event.element.style.font_color = global.red
-				p.character.destructible = false
+				p.character.destructible = true
 			else
 				global.player_character_stats[i].invincible = true
 				event.element.style.font_color = global.green
-				p.character.destructible = true
+				p.character.destructible = false
 			end
 		elseif e == "character_run1" then
 			local run_table = event.element.parent
@@ -238,7 +239,7 @@ function create_character_gui(index)
 	local player = game.players[index]
 	local character_frame = player.gui.left.add { name = "character_panel", type = "frame", direction = "vertical", caption = "Character" }
 	character_frame.add { name = "character_pickup", type = "button", caption = "Pickup" }
-	character_frame.add { name = "character_reach", type = "button", caption = "Reach" }
+	character_frame.add { name = "character_reach", type = "button", caption = " Reach " }
 	character_frame.add { name = "character_craft", type = "button", caption = "Crafting" }
 	character_frame.add { name = "character_mine", type = "button", caption = "Mining" }
 	character_frame.add { name = "character_invincible", type = "button", caption = "Invincible" }
@@ -322,12 +323,12 @@ function update_character(index)
 	end
 
 	if settings.build_itemdrop_reach_resourcereach_distance then
-		player.character_build_distance_bonus =  125
+	    player.character_build_distance_bonus =  125
 		player.character_item_drop_distance_bonus = 125
 		player.character_reach_distance_bonus = 125
 		player.character_resource_reach_distance_bonus = 125
 	else
-		player.character_build_distance_bonus = 0
+	    player.character_build_distance_bonus =  0
 		player.character_item_drop_distance_bonus = 0
 		player.character_reach_distance_bonus = 0
 		player.character_resource_reach_distance_bonus = 0
