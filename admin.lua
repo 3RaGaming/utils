@@ -48,12 +48,13 @@ function entity_mined(event)
 	or entity.name == "entity-ghost" 
 	or entity.type == "locomotive" 
 	or entity.type == "cargo-wagon" 
+	or entity.type == "fluid-wagon"
 	or entity.type == "car" 
 	or entity.type:find("robot") 
 	or game.players[event.player_index].force == game.forces.Admins 
 	or entity.name == "tile-ghost"
-        or entity.name == 'item-request-proxy'
-        or (game and game.active_mods.base:sub(1,4) == '0.14' and (entity.type == 'underground-belt' or entity.type == 'electric-pole'))
+    or entity.name == 'item-request-proxy'
+    or (game and game.active_mods.base:sub(1,4) == '0.14' and (entity.type == 'underground-belt' or entity.type == 'electric-pole'))
 	then return end
 	log("Recreating as ghost: "..entity.name.." (name), "..entity.type.." (type).")
 	local ghost = entity.surface.create_entity
@@ -238,7 +239,7 @@ function create_character_gui(index)
 	local player = game.players[index]
 	local character_frame = player.gui.left.add { name = "character_panel", type = "frame", direction = "vertical", caption = "Character" }
 	character_frame.add { name = "character_pickup", type = "button", caption = "Pickup" }
-	character_frame.add { name = "character_reach", type = "button", caption = "Reach" }
+	character_frame.add { name = "character_reach", type = "button", caption = " Reach " }
 	character_frame.add { name = "character_craft", type = "button", caption = "Crafting" }
 	character_frame.add { name = "character_mine", type = "button", caption = "Mining" }
 	character_frame.add { name = "character_invincible", type = "button", caption = "Invincible" }
