@@ -33,3 +33,10 @@ Event.register(defines.events.on_player_changed_force, function (event)
 		print("PLAYER$force," .. player.index .. "," .. player.name .. "," .. player.force.name)
 	end
 end)
+
+Event.register(defines.events.on_console_command, function (event)
+	local command = string.lower(event.command)
+	if command == "ban" then
+		print("BAN$" .. parameters)
+	end
+end)
