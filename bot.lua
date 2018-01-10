@@ -35,8 +35,9 @@ Event.register(defines.events.on_player_changed_force, function (event)
 end)
 
 Event.register(defines.events.on_console_command, function (event)
+	if not event.player_index then return end
 	local command = string.lower(event.command)
 	if command == "ban" then
-		print("BAN$" .. parameters)
+		print("BAN$" ..event.parameters)
 	end
 end)
